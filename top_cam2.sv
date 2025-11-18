@@ -18,6 +18,7 @@ module top_cam2();
    logic               write_;
    logic               new_valid;
 
+
    logic [TAG_SZ-1:0] tag_0;
    logic [TAG_SZ-1:0] tag_1;
    logic [TAG_SZ-1:0] tag_2;
@@ -116,7 +117,8 @@ module top_cam2();
      check_tag = 8'h1;
      wait(clk == 1'b1);
      wait(clk == 1'b0);
-     $finish;
+    //  $finish; 
+    //as the finish is being called below
    end
 
    initial
@@ -140,7 +142,10 @@ module top_cam2();
 
    always @(posedge clk) begin
     $display("full = %b, data = %h, found_it = %b", full, data, found_it);
+
   end
+
+  
 
 
    assign tag_0 = cam2.tag_mem[0];
@@ -169,4 +174,47 @@ module top_cam2();
    assign val_5 = cam2.val_mem[5];
    assign val_6 = cam2.val_mem[6];
    assign val_7 = cam2.val_mem[7];
+
+  // Fill all CAM entries and check "full"
+integer fill_idx;
+initial begin
+    // Reset and initial entries as usual...
+
+    // Fill every CAM entry to trigger "full"
+    for (fill_idx = 0; fill_idx < WORDS; fill_idx++) begin
+        w_addr    = fill_idx;
+        wdata     = fill_idx + 8'h20;  // any data
+        new_tag   = fill_idx + 8'h10;  // unique tag per entry
+        new_valid = 1'b1;
+        write_    = 1'b0;
+        read      = 1'b0;
+        wait(clk == 1'b1);
+        wait(clk == 1'b0);
+        write_    = 1'b1;
+    end
+
+    // Wait one more cycle and check "full"
+    wait(clk == 1'b1);
+    if (!full)
+        $error("CAM should be full after filling all entries!");
+
+    // Try writing once more after full
+    w_addr    = 0;
+    wdata     = 8'hFF;
+    new_tag   = 8'hFF;
+    new_valid = 1'b1;
+    write_    = 1'b0;
+    wait(clk == 1'b1);
+    wait(clk == 1'b0);
+    write_    = 1'b1;
+
+    // Confirm "full" is still set
+    if (!full)
+        $error("CAM 'full' output should remain set after attempt to overfill!");
+    #100; //to make sure, everything has been done
+    $finish;
+end
+
+
+
 endmodule

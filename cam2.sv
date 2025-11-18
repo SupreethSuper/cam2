@@ -65,10 +65,10 @@ logic                 write_found; //did we find it
                data_mem[index] <= {BITS{1'b0}};
            end
        end
-       else if (!write_) begin // write_ is active-low
-           val_mem[w_addr] <= new_valid;
-           tag_mem[w_addr] <= new_tag;
-           data_mem[w_addr] <= wdata;
+       else if ((!write_) && (new_valid) && (!full) && (write_found) ) begin // write_ is active-low
+           val_mem[write_index] <= new_valid;
+           tag_mem[write_index] <= new_tag;
+           data_mem[write_index] <= wdata;
        end
    end
 //------------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ logic                 write_found; //did we find it
    always_comb begin
        found      = 1'b0;
        match_index= INDEX[0];
-       for (int index = 0; index < WORDS; index++) begin
+       for (index = 0; index < WORDS; index++) begin
            if (val_mem[index] && (tag_mem[index] == check_tag)) begin
                match_index = INDEX[index][ADDR_LEFT : 0];// changed as per INDEX requirement for variable words 
                found = 1'b1;
@@ -105,7 +105,7 @@ logic                 write_found; //did we find it
       write_found = 1'b0; //we are assuming its not empty 
       write_index =  { (ADDR_LEFT + 1) {1'b0} }; //initializing
 
-      for(int windex = 0; windex<WORDS; windex++) begin
+      for(windex = 0; windex<WORDS; windex++) begin
          if(!write_found && (val_mem[windex] == 1'b0)) begin
             write_found = 1'b1; //so we found a space to write
             write_index = INDEX[windex][ADDR_LEFT : 0]; //similar to match_index
