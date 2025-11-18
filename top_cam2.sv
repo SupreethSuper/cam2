@@ -45,9 +45,12 @@ module top_cam2();
    logic val_6;
    logic val_7;
 
+   logic full;              //for the new output full added
+
    cam2 cam2( .data(data), .found_it(found_it),
 
             .check_tag(check_tag), .read(read),
+            .full(full),
 
             .write_(write_), .w_addr(w_addr),
             .wdata(wdata), .new_tag(new_tag), .new_valid(new_valid),
@@ -131,33 +134,39 @@ module top_cam2();
    initial
      begin
       $dumpfile("cam.vcd");      // dump the waves
-      $dumpvars(0,top_cam);
+      $dumpvars(0,top_cam2);
    end
 
-   assign tag_0 = cam.tag_mem[0];
-   assign tag_1 = cam.tag_mem[1];
-   assign tag_2 = cam.tag_mem[2];
-   assign tag_3 = cam.tag_mem[3];
-   assign tag_4 = cam.tag_mem[4];
-   assign tag_5 = cam.tag_mem[5];
-   assign tag_6 = cam.tag_mem[6];
-   assign tag_7 = cam.tag_mem[7];
 
-   assign data_0 = cam.data_mem[0];
-   assign data_1 = cam.data_mem[1];
-   assign data_2 = cam.data_mem[2];
-   assign data_3 = cam.data_mem[3];
-   assign data_4 = cam.data_mem[4];
-   assign data_5 = cam.data_mem[5];
-   assign data_6 = cam.data_mem[6];
-   assign data_7 = cam.data_mem[7];
+   always @(posedge clk) begin
+    $display("full = %b, data = %h, found_it = %b", full, data, found_it);
+  end
 
-   assign val_0 = cam.val_mem[0];
-   assign val_1 = cam.val_mem[1];
-   assign val_2 = cam.val_mem[2];
-   assign val_3 = cam.val_mem[3];
-   assign val_4 = cam.val_mem[4];
-   assign val_5 = cam.val_mem[5];
-   assign val_6 = cam.val_mem[6];
-   assign val_7 = cam.val_mem[7];
+
+   assign tag_0 = cam2.tag_mem[0];
+   assign tag_1 = cam2.tag_mem[1];
+   assign tag_2 = cam2.tag_mem[2];
+   assign tag_3 = cam2.tag_mem[3];
+   assign tag_4 = cam2.tag_mem[4];
+   assign tag_5 = cam2.tag_mem[5];
+   assign tag_6 = cam2.tag_mem[6];
+   assign tag_7 = cam2.tag_mem[7];
+
+   assign data_0 = cam2.data_mem[0];
+   assign data_1 = cam2.data_mem[1];
+   assign data_2 = cam2.data_mem[2];
+   assign data_3 = cam2.data_mem[3];
+   assign data_4 = cam2.data_mem[4];
+   assign data_5 = cam2.data_mem[5];
+   assign data_6 = cam2.data_mem[6];
+   assign data_7 = cam2.data_mem[7];
+
+   assign val_0 = cam2.val_mem[0];
+   assign val_1 = cam2.val_mem[1];
+   assign val_2 = cam2.val_mem[2];
+   assign val_3 = cam2.val_mem[3];
+   assign val_4 = cam2.val_mem[4];
+   assign val_5 = cam2.val_mem[5];
+   assign val_6 = cam2.val_mem[6];
+   assign val_7 = cam2.val_mem[7];
 endmodule

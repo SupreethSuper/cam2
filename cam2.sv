@@ -33,9 +33,15 @@ module cam
 //--------------------------------------------------------------------------------------
    );
 
-   `include "cam_params.vh"
+   `include "cam_params.vh" 
  
 
+
+//----------------adding the vars--------------------------------
+integer               windex;      //for the loop
+logic [ADDR_LEFT : 0] write_index; //where we found it
+logic                 write_found; //did we find it
+//----------------------------------------------------------------
 
 
 
@@ -47,6 +53,9 @@ module cam
    logic [ADDR_LEFT:0] match_index;     // where we found it
    logic found;                         // did we find it
 
+
+
+//--------------------------------------------------------------------------------
    //the reset block
    always_ff @( posedge clk or negedge rst_ ) begin //reset
     
@@ -68,6 +77,13 @@ module cam
         end
       end
       //if not the write_, then its the read, and using if, cause not taking the risk of using if else
+    
+   end
+//------------------------------------------------------------------------------------------
+
+
+
+//----------------------------------------------------------------------------------------------
        always_comb begin
         
             found       = 1'b0;
@@ -82,24 +98,24 @@ module cam
 
 
        end
-    
+//-------------------------------------------------------------------------------------------------
 
 
-   end
+//-----------------------new style of writing to CAM-----------------------------------
 
-//I guess this is equlivalent to if(read)
-// always @(read) begin
-//     found       = 1'b0;
-//     match_index = INDEX[0][ ADDR_LEFT : 0 ]; //change as per announcement
 
-//     for (index = 0; index < WORDS; index = index + 1) begin
-//         if (val_mem[index] && (tag_mem[index] == new_tag)) begin
-//             match_index = INDEX[index][ ADDR_LEFT : 0 ]; //change as per announcement
-//             found       = 1'b1;
-//         end
-//     end
-// end
+always_comb begin
 
+
+full = 1'b0;
+
+//this is where the for loop comes in i guess
+
+
+end
+
+
+//--------------------------------------------------------------------------------------
 
 
    assign data = found ? data_mem[match_index] : { BITS { 1'b0 } };
