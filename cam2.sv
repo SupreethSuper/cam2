@@ -37,6 +37,12 @@ module cam
  
 
 
+//----------------adding the vars--------------------------------
+integer               windex;      //for the loop
+logic [ADDR_LEFT : 0] write_index; //where we found it
+logic                 write_found; //did we find it
+//----------------------------------------------------------------
+
 
 
    logic [BITS-1:0]   data_mem[0:WORDS-1]; // data memory
