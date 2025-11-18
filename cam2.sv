@@ -95,15 +95,31 @@ logic                 write_found; //did we find it
 //-----------------------new style of writing to CAM-----------------------------------
 
 
-always_comb begin
+   always_comb begin
+
+// integer               windex;      //for the loop
+// logic [ADDR_LEFT : 0] write_index; //where we found it
+// logic                 write_found; //did we find it
+
+      full        = 1'b1; //we are saying that, initially its full
+      write_found = 1'b0; //we are assuming its not empty 
+      write_index =  { (ADDR_LEFT + 1) {1'b0} }; //initializing
+
+      for(int windex = 0; windex<WORDS; windex++) begin
+         if(!write_found && (val_mem[windex] == 1'b0)) begin
+            write_found = 1'b1; //so we found a space to write
+            write_index = INDEX[windex][ADDR_LEFT : 0]; //similar to match_index
+            full = 1'b0; //found atleast one empty
+
+         end
+      end
 
 
-full = 1'b0;
 
-//this is where the for loop comes in i guess
+      //this is where the for loop comes in i guess
 
 
-end
+   end
 
 
 //--------------------------------------------------------------------------------------
