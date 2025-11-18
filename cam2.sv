@@ -12,6 +12,7 @@ module cam
 //---------------------outputs only----------------------------------------------
    output logic [BITS-1:0]    data,        // the data
    output logic               found_it,    // was in the CAM
+   output logic               full,        //if  1 cam is full, else 0
 //----------------------end of outputs--------------------------------------------
 
 //------------------------inputs only-------------------------------------------
