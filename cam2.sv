@@ -1,5 +1,5 @@
 // Cache using CAM
-module cam
+module cam2
   #(
    parameter WORDS=8,                   // default number of words
    parameter BITS=8,                    // default number of bits per word
@@ -57,48 +57,39 @@ logic                 write_found; //did we find it
 
 //--------------------------------------------------------------------------------
    //the reset block
-   always_ff @( posedge clk or negedge rst_ ) begin //reset
-    
-    if(!rst_) begin
-      //all the mems set to 0
-      for(index = 0; index < WORDS; index ++) begin
-        data_mem[ index ] <= 1'b0;
-        tag_mem [ index ] <= { TAG_SZ { 1'b0 } };
-        val_mem [ index ] <= { BITS { 1'b0 } };
-         end
-      end
-      else begin
-        //now checking if write_ == 0, cause condition executing at !write_, which means that !write_ =1, which means that write_ = 0
-        if(!write_) begin
-
-          data_mem[ w_addr ] <= wdata;
-          tag_mem [ w_addr ] <= new_tag;
-          val_mem [ w_addr ] <= new_valid;
-        end
-      end
-      //if not the write_, then its the read, and using if, cause not taking the risk of using if else
-    
+      always_ff @(posedge clk or negedge rst_) begin
+       if (!rst_) begin
+           for (int index = 0; index < WORDS; index++) begin
+               val_mem[index] <= 1'b0;
+               tag_mem[index] <= {TAG_SZ{1'b0}};
+               data_mem[index] <= {BITS{1'b0}};
+           end
+       end
+       else if (!write_) begin // write_ is active-low
+           val_mem[w_addr] <= new_valid;
+           tag_mem[w_addr] <= new_tag;
+           data_mem[w_addr] <= wdata;
+       end
    end
 //------------------------------------------------------------------------------------------
 
 
+//---------------------------------------------------------------------------------------
 
-//----------------------------------------------------------------------------------------------
-       always_comb begin
-        
-            found       = 1'b0;
-            match_index = INDEX[0]; //change as per announcement
-
-            for (index = 0; index < WORDS; index = index++) begin
-               if (val_mem[index] && (tag_mem[index] == check_tag)) begin
-                     match_index = INDEX[index][ ADDR_LEFT : 0 ]; //change as per announcement
-                     found       = 1'b1;
-               end
-            end
-
-
+   always_comb begin
+       found      = 1'b0;
+       match_index= INDEX[0];
+       for (int index = 0; index < WORDS; index++) begin
+           if (val_mem[index] && (tag_mem[index] == check_tag)) begin
+               match_index = INDEX[index][ADDR_LEFT : 0];// changed as per INDEX requirement for variable words 
+               found = 1'b1;
+           end
        end
-//-------------------------------------------------------------------------------------------------
+   end
+
+//---------------------------------------------------------------------------------------
+
+
 
 
 //-----------------------new style of writing to CAM-----------------------------------
